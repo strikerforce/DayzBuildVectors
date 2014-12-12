@@ -2,13 +2,13 @@
 	DayZ Base Building
 	Made for DayZ Epoch please ask permission to use/edit/distrubute email vbawol@veteranbastards.com.
 */
-private ["_location","_dir","_classname","_item","_hasrequireditem","_missing","_hastoolweapon","_cancel","_reason","_started","_finished","_animState","_isMedic","_dis","_sfx","_hasbuilditem","_tmpbuilt","_onLadder","_isWater","_require","_text","_offset","_IsNearPlot","_isOk","_location1","_location2","_counter","_limit","_proceed","_num_removed","_position","_object","_canBuildOnPlot","_friendlies","_nearestPole","_ownerID","_findNearestPoles","_findNearestPole","_distance","_classnametmp","_ghost","_isPole","_needText","_lockable","_zheightchanged","_rotate","_combination_1","_combination_2","_combination_3","_combination_4","_combination","_combination_1_Display","_combinationDisplay","_zheightdirection","_abort","_isNear","_need","_needNear","_vehicle","_inVehicle","_requireplot","_objHDiff","_isLandFireDZ","_isTankTrap","_playerID", "_playerUID","_ownerID","_vector","_buildOffset","_vUp"];
+private ["_location","_dir","_classname","_item","_hasrequireditem","_missing","_hastoolweapon","_cancel","_reason","_started","_finished","_animState","_isMedic","_dis","_sfx","_hasbuilditem","_tmpbuilt","_onLadder","_isWater","_require","_text","_offset","_IsNearPlot","_isOk","_location1","_location2","_counter","_limit","_proceed","_num_removed","_position","_object","_canBuildOnPlot","_friendlies","_nearestPole","_ownerID","_findNearestPoles","_findNearestPole","_distance","_classnametmp","_ghost","_isPole","_needText","_lockable","_zheightchanged","_rotate","_combination_1","_combination_2","_combination_3","_combination_4","_combination","_combination_1_Display","_combinationDisplay","_zheightdirection","_abort","_isNear","_need","_needNear","_vehicle","_inVehicle","_requireplot","_objHDiff","_isLandFireDZ","_isTankTrap","_playerID", "_playerUID","_ownerID","_buildcheck","_isowner","_isfriendly","_maxBuildDistance","_vector","_buildOffset","_vUp"];
 
 if(DZE_ActionInProgress) exitWith { cutText [(localize "str_epoch_player_40") , "PLAIN DOWN"]; };
 DZE_ActionInProgress = true;
 
 // disallow building if too many objects are found within 30m
-if((count ((getPosATL player) nearObjects ["All",30])) >= DZE_BuildingLimit) exitWith {DZE_ActionInProgress = false; cutText [(localize "str_epoch_player_41"), "PLAIN DOWN"];};
+if((count (([player] call FNC_GetPos) nearObjects ["All",30])) >= DZE_BuildingLimit) exitWith {DZE_ActionInProgress = false; cutText [(localize "str_epoch_player_41"), "PLAIN DOWN"];};
 
 _onLadder =		(getNumber (configFile >> "CfgMovesMaleSdr" >> "States" >> (animationState player) >> "onLadder")) == 1;
 _isWater = 		dayz_isSwimming;
@@ -68,7 +68,7 @@ _needNear = 	getArray (configFile >> "CfgMagazines" >> _item >> "ItemActions" >>
 		case "fire":
 		{
 			_distance = 3;
-			_isNear = {inflamed _x} count (getPosATL player nearObjects _distance);
+			_isNear = {inflamed _x} count (([player] call FNC_GetPos) nearObjects _distance);
 			if(_isNear == 0) then {
 				_abort = true;
 				_reason = "fire";
@@ -117,6 +117,8 @@ if(isNumber (configFile >> "CfgVehicles" >> _classname >> "requireplot")) then {
 	_requireplot = getNumber(configFile >> "CfgVehicles" >> _classname >> "requireplot");
 };
 
+if (_requireplot == 0) then{_requireplot = false}else{_requireplot = true};
+
 _isAllowedUnderGround = 1;
 if(isNumber (configFile >> "CfgVehicles" >> _classname >> "nounderground")) then {
 	_isAllowedUnderGround = getNumber(configFile >> "CfgVehicles" >> _classname >> "nounderground");
@@ -154,36 +156,22 @@ if(_isPole && _IsNearPlot > 0) exitWith {  DZE_ActionInProgress = false; cutText
 
 if(_IsNearPlot == 0) then {
 
-	// Allow building of plot
-	if(_requireplot == 0 || _isLandFireDZ) then {
+	// Allow building of plotpole or items not requiring a plot pole
+	if(!(_requireplot) || _isLandFireDZ) then {
 		_canBuildOnPlot = true;
 	};
 
 } else {
-	// Since there are plots nearby we check for ownership && then for friend status
+	// Since there are plot poles nearby we need to check ownership && friend status
 
-	// check nearby plots ownership && then for friend status
+	// check nearest pole only
 	_nearestPole = _findNearestPole select 0;
 
-	// Find owner
-	_ownerID = _nearestPole getVariable ["ownerPUID","0"];
-
-	// check if friendly to owner
-	if(_playerID == _ownerID) then {  //Keep ownership
-		// owner can build anything within his plot except other plots
-		if(!_isPole) then {
-			_canBuildOnPlot = true;
-		};
-
-	} else {
-		// disallow building plot
-		if(!_isPole) then {
-			_friendlies		= player getVariable ["friendlyTo",[]];
-			// check if friendly to owner
-			if(_ownerID in _friendlies) then {
-				_canBuildOnPlot = true;
-			};
-		};
+	_buildcheck = [player, _nearestPole] call FNC_check_owner;
+	_isowner = _buildcheck select 0;
+	_isfriendly = _buildcheck select 1;
+	if ((_isowner) || (_isfriendly)) then {
+		_canBuildOnPlot = true;
 	};
 };
 
@@ -206,8 +194,19 @@ if (_hasrequireditem) then {
 	_location = [0,0,0];
 	_isOk = true;
 
-	// get inital players position
-	_location1 = getPosATL player;
+	// get initial players position & set max build range origin.
+	if ((DZE_BuildInPlotRadius) && (_requireplot)) then{
+		_location1 = [_nearestPole] call FNC_GetPos;
+		_maxBuildDistance = _Distance / 2;
+		diag_log text "Pole initial location.";
+	}else{
+		_location1 = [player] call FNC_GetPos;
+		_maxBuildDistance = 5;
+		diag_log text "Player initial location.";
+	};
+	
+	diag_log format["[Player_Build] _location1 = %1, _maxBuildDistance = %2, DZE_BuildInPlotRadius = %3, _requireplot = %4",_location1, _maxBuildDistance, DZE_BuildInPlotRadius, _requireplot];
+	
 	_dir = getDir player;
 
 	// if ghost preview available use that instead
@@ -219,12 +218,12 @@ if (_hasrequireditem) then {
 
 	_object attachTo [player,_offset];
 
-	_position = getPosATL _object;
+	_position = [_object] call FNC_GetPos;
 
 	cutText [(localize "str_epoch_player_45"), "PLAIN DOWN"];
 
 	_objHDiff = 0;
-	
+
 	if !(_item in DZE_noRotate) then{
 		["","","",["Init","Init",0]] spawn build_vectors;
 	};
@@ -387,7 +386,7 @@ if (_hasrequireditem) then {
 			deleteVehicle _object;
 		};
 	};
-	
+
 	//No building on roads unless toggled
 	if (!DZE_BuildOnRoads) then {
 		if (isOnRoad _position) then { _cancel = true; _reason = "Cannot build on a road."; };
@@ -395,6 +394,22 @@ if (_hasrequireditem) then {
 
 	// No building in trader zones
 	if(!canbuild) then { _cancel = true; _reason = "Cannot build in a city."; };
+	
+	if ((DZE_BuildOnGround) && !(_requireplot)) then{
+		_toohigh = false;
+		if (_ispole) then{
+			if ((_position select 2) > DZE_MaxPlotHeight) then{_toohigh = true};
+		}else{
+			if ((_position select 2) > DZE_MaxNoPlotNeededHeight) then{_toohigh = true};
+		};
+		if (_toohigh) exitWith {
+			_isOk = false;
+			_cancel = true;
+			_reason = "This item must be built at ground level.";
+			detach _object;
+			deleteVehicle _object;
+		};
+	};
 
 	if(!_cancel) then {
 
@@ -433,7 +448,6 @@ if (_hasrequireditem) then {
 			_tmpbuilt setPosATL _location;
 		};
 
-
 		cutText [format[(localize "str_epoch_player_138"),_text], "PLAIN DOWN"];
 
 		_limit = 3;
@@ -459,7 +473,7 @@ if (_hasrequireditem) then {
 			_dis=20;
 			_sfx = "repair";
 			[player,_sfx,0,false,_dis] call dayz_zombieSpeak;
-			[player,_dis,true,(getPosATL player)] spawn player_alertZombies;
+			[player,_dis,true,([player] call FNC_GetPos)] spawn player_alertZombies;
 
 			r_interrupt = false;
 			r_doLoop = true;
