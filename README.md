@@ -4,10 +4,12 @@ DayzBuildVectors
 Install Guide
 -------------
 
+If you have not installed Rimblock's [A Plot for Life v2.34](https://github.com/RimBlock/Epoch/tree/master/A%20Plot%20for%20Life/v2.34%20%26%20Snap%20Pro%20v1.4.1), do so now (ignore the server_monitor.sqf file as I will cover it).
+
 ####Server Side
 
 First thing you need to do is make a few edits to your dayz_server.pbo file.
-Start by opening your **server_monitor.sqf** which is located in the system folder and find the following code block:
+Start by opening your **server_monitor.sqf**(Remove anything done from P4L installation) which is located in the system folder and find the following code block:
 
 ```
 if (!_wsDone) then {
@@ -178,7 +180,7 @@ That completes everything server side :)
 
 ####Mission Side
 As of right now, the only file pack that I have up is Rimblock's Plot For Life v2.34 infused with Raymix's Snap Build Pro.
-Download the zip file and open up the folder P4L\_Snap_Replacements. That folder is equilvilent to the custom folder.
+[Download the zip file](https://github.com/strikerforce/DayzBuildVectors/archive/master.zip) and open up the folder P4L\_Snap_Replacements. That folder is equilvilent to the custom folder.
 Replace the files in your mission with those (I only provided the files that needed changeing).
 
 Once that is complete, open up your custom **compile.sqf** file and add these near **player_build =**
