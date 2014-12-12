@@ -75,3 +75,31 @@ _vector = [[0,0,0],[0,0,0]];
 			};
 		}; 
 ```
+
+Once that is complete, find this next line:
+```
+_object setVariable ["ObjectID", _idKey, true];
+```
+And place the following after it:
+```
+_object setVariable ["ownerPUID", _ownerPUID, true];
+```
+Now it's time to apply the vector to the object, so find the following line:
+```
+_object setdir _dir;
+```
+And place this after it:
+```
+if(_vecExists)then{
+	_object setVectorDirAndUp _vector;
+}; 
+```
+Last but not least, we need to save the objects direction to a variable. To do the find:
+```
+if (DZE_GodModeBase) then {
+```
+And place the following above it:
+```
+_object setVariable["memDir",_dir,true];
+```
+
