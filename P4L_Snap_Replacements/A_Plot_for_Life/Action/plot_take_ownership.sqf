@@ -5,7 +5,7 @@
 // Note:
 // This code calls server_publishFullObject which also saves damage, inventory and fuel.  Hitpoints are assumed to be empty as this is for buildables only.
 
-private ["_distance","_plotpole","_playerUID","_isowner", "_findNearestObjects","_classname","_objectID", "_objectUID", "_position", "_worldspace", "_object", "_key","_invW","_invM","_invB","_itemsExist","_charID","_inventory"];
+private ["_distance","_plotpole","_playerUID","_isowner", "_findNearestObjects","_classname","_objectID", "_objectUID", "_position", "_worldspace", "_object", "_key","_invW","_invM","_invB","_itemsExist","_charID","_inventory","_vector"];
 
 _distance = (DZE_PlotPole select 0) + 1;
 _plotpole = nearestobject [(vehicle player),"Plastic_Pole_EP1_DZ"];
@@ -45,7 +45,8 @@ if ((_isowner select 0 )) then {
 				};
 				
 				_position = 	[_object] call FNC_GetPos;
-				_worldspace = 	[round(direction _object),_position,_playerUID];
+				_vector = [(vectorDir _object),(vectorUp _object)];
+				_worldspace = 	[round(direction _object),_position,_playerUID,_vector];
 
 				_invW = getWeaponCargo _object;
 				{
