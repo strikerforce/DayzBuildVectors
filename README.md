@@ -177,3 +177,20 @@ dayz_objectUID2 = {
 That completes everything server side :)
 
 ####Mission Side
+As of right now, the only file pack that I have up is Rimblock's Plot For Life v2.34 infused with Raymix's Snap Build Pro.
+Download the zip file and open up the folder P4L\_Snap_Replacements. That folder is equilvilent to the custom folder.
+Replace the files in your mission with those (I only provided the files that needed changeing).
+
+Once that is complete, open up your custom **compile.sqf** file and add these near **player_build =**
+```
+fnc_SetPitchBankYaw =       compile preprocessFileLineNumbers "Custom\Snap_Pro\fnc_SetPitchBankYaw.sqf";
+DZE_build_vector_file = 		"Custom\Snap_Pro\build_vectors.sqf";
+build_vectors = 				compile preprocessFileLineNumbers DZE_build_vector_file;
+```
+Then open your **init.sqf** file and add these variables near **DZE_BuildOnRoads**:
+```
+DZE_noRotate = []; //Objects that cannot be rotated. Ex: DZE_noRotate = ["ItemVault"] (NOTE: The objects magazine classname)
+DZE_vectorDegrees = [0.01, 0.1, 1, 5, 15, 45, 90];
+DZE_curDegree = 45; //Starting rotation angle. //Prefered any value in array above
+DZE_dirWithDegrees = true; //When rotating objects with Q&E, use the custom degrees
+```
