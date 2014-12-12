@@ -185,8 +185,8 @@ Replace the files in your mission with those (I only provided the files that nee
 
 Once that is complete, open up your custom **compile.sqf** file and add these near **player_build =**
 ```
-fnc_SetPitchBankYaw =       compile preprocessFileLineNumbers "Custom\Snap_Pro\fnc_SetPitchBankYaw.sqf";
-DZE_build_vector_file = 		"Custom\Snap_Pro\build_vectors.sqf";
+fnc_SetPitchBankYaw =       compile preprocessFileLineNumbers "Custom\BuildVectors\fnc_SetPitchBankYaw.sqf";
+DZE_build_vector_file = 		"Custom\BuildVectors\build_vectors.sqf";
 build_vectors = 				compile preprocessFileLineNumbers DZE_build_vector_file;
 ```
 Then open your **init.sqf** file and add these variables near **DZE_BuildOnRoads**:
