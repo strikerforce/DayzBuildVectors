@@ -4,10 +4,10 @@ DayzBuildVectors
 Install Guide
 -------------
 
-###Server Side
+####Server Side
 
 First thing you need to do is make a few edits to your dayz_server.pbo file.
-Start by opening you server_monitor.sqf which is located in the system folder and find the following code block:
+Start by opening your **server_monitor.sqf** which is located in the system folder and find the following code block:
 
 ```
 		if (!_wsDone) then {
@@ -103,3 +103,77 @@ And place the following above it:
 _object setVariable["memDir",_dir,true];
 ```
 
+
+The next file we need to edit is the **server_functions.sqf**.
+
+Find the following function:
+```
+dayz_objectUID2 = {
+```
+And replace that code block with:
+```
+dayz_objectUID2 = {
+	private["_position","_dir","_key","_element","_vector","_set","_vecCnt","_usedVec"];
+	_dir = _this select 0;
+	_key = "";
+	_position = _this select 1;
+	
+	if((count _this) == 2) then{
+		{
+			_x = _x * 10;
+			if ( _x < 0 ) then { _x = _x * -10 };
+			_key = _key + str(round(_x));
+		} count _position;
+		_key = _key + str(round(_dir));
+	}else{
+		_vector = [];
+		_usedVec = false;
+		{
+			_element = _x;
+			if(typeName _element == "ARRAY") then{
+				_vector = _element;
+				if((count _vector) == 2)then{
+					if(((count (_vector select 0)) == 3) && ((count (_vector select 1)) == 3))then{
+							{
+								_x = _x * 10;
+								if ( _x < 0 ) then { _x = _x * -10 };
+								_key = _key + str(round(_x));
+							} count _position;
+							
+							_vecCnt = 0;
+							{
+								_set = _x;
+								{
+									_vecCnt = _vecCnt + (round (_x * 100))
+									
+								} count _set;
+								
+							} count _vector;
+							if(_vecCnt < 0)then{
+								_vecCnt = ((_vecCnt * -1) * 3);
+							};
+							_key = _key + str(_vecCnt);
+							_usedVec = true;
+					};
+				};
+			};
+		} count _this;
+		
+		if!(_usedVec) then{
+				{
+					_x = _x * 10;
+					if ( _x < 0 ) then { _x = _x * -10 };
+					_key = _key + str(round(_x));
+				} count _position;
+				_key = _key + str(round(_dir));
+		};
+		
+		
+	};
+	_key
+};
+```
+
+That completes everything server side :)
+
+####Mission Side
