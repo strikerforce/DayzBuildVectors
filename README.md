@@ -196,3 +196,20 @@ DZE_vectorDegrees = [0.01, 0.1, 1, 5, 15, 45, 90];
 DZE_curDegree = 45; //Starting rotation angle. //Prefered any value in array above
 DZE_dirWithDegrees = true; //When rotating objects with Q&E, use the custom degrees
 ```
+
+Finally, in your **variables.sqf**, find:
+```
+s_player_lockUnlock_crtl = -1;
+```
+Under that, add:
+```
+s_player_toggleDegree = -1;
+s_player_toggleDegrees=[];
+degreeActions = -1;
+s_player_toggleVector = -1;
+s_player_toggleVectors=[];
+vectorActions = -1;
+```
+
+
+That's it, your done!
