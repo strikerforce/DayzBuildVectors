@@ -176,6 +176,8 @@ dayz_objectUID2 = {
 };
 ```
 
+**Optional:** Install [Precise Base Building](http://epochmod.com/forum/index.php?/topic/15813-release-v103-precise-base-building-persistent-bases-after-restart/). HIGHLY RECOMMENDED and necessary if you ran it previously.  
+
 That completes everything server side :)
 
 ####Mission Side
