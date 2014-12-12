@@ -32,5 +32,8 @@ if (isClass (missionConfigFile >> "SnapBuilding" >> _classname)) then {
 	["","","",["Init",_object,_classname,_objectHelper]] spawn snap_build;
 };
 
+if !(DZE_buildItem in DZE_noRotate) then{
+	["","","",["Init","Init",0]] spawn build_vectors;
+};
 _passArray = [_location1,_object,_objectHelper];
 _passArray //[array,obj,array]
