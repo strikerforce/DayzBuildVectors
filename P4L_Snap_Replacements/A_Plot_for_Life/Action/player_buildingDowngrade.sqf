@@ -2,7 +2,7 @@
 	DayZ Base Building Upgrades
 	Made for DayZ Epoch please ask permission to use/edit/distrubute email vbawol@veteranbastards.com.
 */
-private ["_location","_dir","_classname","_text","_object","_objectID","_objectUID","_newclassname","_refund","_obj","_upgrade","_objectCharacterID","_canBuildOnPlot","_friendlies","_nearestPole","_ownerID","_distance","_needText","_findNearestPoles","_findNearestPole","_IsNearPlot","_i","_invResult","_itemOut","_countOut","_abortInvAdd","_addedItems","_playerUID"];
+private ["_location","_dir","_classname","_text","_object","_objectID","_objectUID","_newclassname","_refund","_obj","_upgrade","_objectCharacterID","_canBuildOnPlot","_friendlies","_nearestPole","_ownerID","_distance","_needText","_findNearestPoles","_findNearestPole","_IsNearPlot","_i","_invResult","_itemOut","_countOut","_abortInvAdd","_addedItems","_playerUID","_vector"];
 
 if(DZE_ActionInProgress) exitWith { cutText [(localize "str_epoch_player_48") , "PLAIN DOWN"]; };
 DZE_ActionInProgress = true;
@@ -127,7 +127,10 @@ if ((count _upgrade) > 0) then {
 
 		// Get direction
 		_dir = getDir _obj;
-
+		
+		// Get vector
+		_vector = [(vectorDir _obj),(vectorUp _obj)];
+		
 		// Reset the character ID on locked doors before they inherit the newclassname
 		if (_classname in DZE_DoorsLocked) then {
 			_obj setVariable ["CharacterID",dayz_characterID,true];
@@ -141,7 +144,11 @@ if ((count _upgrade) > 0) then {
 
 		// Set direction
 		_object setDir _dir;
-
+		_object setVariable["memDir",_dir,true];
+		
+		// Set vector
+		_object setVectorDirAndUp _vector;
+		
 		// Set location
 		_object setPosATL _location;
 
@@ -153,7 +160,7 @@ if ((count _upgrade) > 0) then {
 		cutText [format[(localize "str_epoch_player_142"),_text], "PLAIN DOWN", 5];
 
 		_playerUID = [player] call FNC_GetPlayerUID;
-		PVDZE_obj_Swap = [_objectCharacterID,_object,[_dir,_location,_playerUID],_classname,_obj,player];
+		PVDZE_obj_Swap = [_objectCharacterID,_object,[_dir,_location,_playerUID,_vector],_classname,_obj,player];
 		publicVariableServer "PVDZE_obj_Swap";
 
 		player reveal _object;
