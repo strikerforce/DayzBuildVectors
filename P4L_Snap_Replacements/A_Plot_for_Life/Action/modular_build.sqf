@@ -2,7 +2,7 @@
 if(DZE_ActionInProgress) exitWith { cutText [(localize "str_epoch_player_40") , "PLAIN DOWN"]; };
 DZE_ActionInProgress = true;
 
-private ["_itemConfig","_classname","_classnametmp","_require","_text","_ghost","_lockable","_requireplot","_isAllowedUnderGround","_offset","_isPole","_isLandFireDZ","_hasRequired","_hasrequireditem","_reason","_buildObject","_location1","_object","_objectHelper","_position","_controls","_cancel","_dir"];
+private ["_itemConfig","_classname","_classnametmp","_require","_text","_ghost","_lockable","_requireplot","_isAllowedUnderGround","_offset","_isPole","_isLandFireDZ","_hasRequired","_hasrequireditem","_reason","_buildObject","_location1","_object","_objectHelper","_position","_controls","_cancel","_dir","_vector"];
 
 /*Basic Defines*/
 DZE_Q = false;
@@ -21,6 +21,11 @@ DZE_6 = false;
 DZE_F = false;
 
 DZE_cancelBuilding = false;
+
+DZE_updateVec = false;
+DZE_memDir = 0;
+DZE_memForBack = 0;
+DZE_memLeftRight = 0;
 
 call gear_ui_init;
 closeDialog 1;
@@ -80,8 +85,9 @@ _hasrequireditem = _hasRequired select 0; //bool
 		_reason = _controls select 1; //string
 		_position = _controls select 2; //array
 		_dir = _controls select 3; //int
+		_vector = _controls select 4; //array
 		
 		//Publish item to a database
-		[_cancel, _position, _classnametmp,_isAllowedUnderGround, _text, _isPole, _lockable,_dir, _reason] call player_build_publish;
+		[_cancel, _position, _classnametmp,_isAllowedUnderGround, _text, _isPole, _lockable,_dir, _reason, _vector] call player_build_publish;
 	};
 };
