@@ -148,9 +148,9 @@ dayz_objectUID2 = {
 								{
 									_vecCnt = _vecCnt + (round (_x * 100));
 									
-								} count _set;
+								} foreach _set;
 								
-							} count _vector;
+							} foreach _vector;
 							if(_vecCnt < 0)then{
 								_vecCnt = ((_vecCnt * -1) * 3);
 							};
